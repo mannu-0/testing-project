@@ -8,4 +8,4 @@ RUN  unzip healet.zip
 RUN  cp -rf healet-html/* . &&\
      rm -rf healet-html
 EXPOSE 80
-CMD  ["/usir/sbin/httpd", "D", "FOREGROUND"]
+CMD  ["/usr/sbin/httpd", "D", "FOREGROUND"]
