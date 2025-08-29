@@ -1,11 +1,21 @@
-FROM centos:latest
-RUN  sed -i 's/mirrorlist/#mirrorlist/g'  /etc/yum.repos.d/CentOS-*
-RUN  sed -i 's/#baseurl=http://mirror.centOS.org/baseurl=http://vault.centos.org/g' /etc/yum.repos.d/CentOS-*
-RUN  yum install httpd zip wget unzip -y
-RUN  wget -O /var/www/html/healet.zip https://www.free-css.com/assets/files/free-css-templates/downloads/page296/healet.zip
+FROM centos:7
+
+# Fix yum repo (CentOS 7 vault)
+RUN  sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && \
+     sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-* && \
+     yum clean all && \
+     yum install -y httpd wget unzip zip && \
+     yum clean all
+
+# Download template
 WORKDIR /var/www/html
-RUN  unzip healet.zip
-RUN  cp -rf healet-html/* . &&\
-     rm -rf healet-html
+RUN wget -O healet.zip https://www.free-css.com/assets/files/free-css-templates/downloads/page296/healet.zip && \
+    unzip healet.zip && \
+    cp -rf healet-html/* . && \
+    rm -rf healet-html healet.zip
+
+# Expose port
 EXPOSE 80
-CMD  ["/usr/sbin/httpd", "D", "FOREGROUND"]
+
+# Start Apache in foreground
+CMD ["/usr/sbin/httpd", "-D", "FOREGROUND"]
